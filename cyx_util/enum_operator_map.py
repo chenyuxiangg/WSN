@@ -1,4 +1,4 @@
-from util.enum_operator_type import eot;
+from cyx_util.enum_operator_type import eot;
 
 eom = {
 		eot.SEND : 5,

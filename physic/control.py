@@ -3,15 +3,10 @@ import random;
 import threading;
 
 class control:
-	__nodelist = [];
-	__threadlist = [];
+	def __init__(self, nodelist):
+		self.__nodelist = nodelist;
+		self.__threadlist = [];
 	
-	def __init__(self):
-		pass
-	
-	def addnode(self, node):
-		self.__nodelist.append(node);
-		
 	def send(self, msg):
 		src_id = msg.m_src;
 		src = "";
@@ -27,17 +22,17 @@ class control:
 			if pos == des_pos:
 				continue;
 				
-			distance = math.sqrt(math.pow((pos[0] - des_pos[0]),2) - math.pow((pos[1] - des_pos[1]),2));
+			distance = math.sqrt(math.pow((pos[0] - des_pos[0]),2) + math.pow((pos[1] - des_pos[1]),2));
 			if distance > radius:
 				continue;
 				
-			# 求出通信成功率
-			t = 1- (distance / (radius * node.m_radius));
-			# 模拟通信成功
+			# success rate of communication
+			t = 1- (math.pow(distance,2) / (radius * node.m_radius));
+			# measure
 			tflag = 100 * t;
 			flag = random.choice(range(100));
 			if flag <= tflag:
-				t = threading.Thread(target=wake, args=(self, node, msg));
+				t = threading.Thread(target=control.wake, args=(self, node, msg));
 				self.__threadlist.append(t);
 				t.start();
 				
@@ -46,5 +41,8 @@ class control:
 				
 	def wake(self, node, msg):
 		node.recv(msg);
-		msg.m_hopcount--;
-		node.send(msg);
+		msg.m_hopcount -= 1;
+
+	# for test
+	def getnodelist(self):
+		return self.__nodelist;
