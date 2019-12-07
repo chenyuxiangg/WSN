@@ -3,18 +3,21 @@ from numpy.linalg import cholesky;
 import random;
 import sys;
 import math;
+import matplotlib;
+import matplotlib.pyplot as plt;
 sys.path.append("..");
 
 from physic import node;
 from physic import message;
 from physic import control;
 from strategy import manager;
+import visual.visual as visual;
 from strategy.enum_strategy import enum_strategy as es;
 
 # 生成sampleNo个节点的半径
 mu = random.randint(1, 9);
 sigma = random.randint(0, 4);
-sampleNo = 110;
+sampleNo = 1500;
 rs = np.random.normal(mu,sigma,sampleNo);
 # 绝对化
 for i in range(len(rs)):
@@ -30,7 +33,7 @@ nodelist = [];
 contr = control.control(nodelist);
 for i in range(sampleNo):
 	n = node.node(i,(xlist[i],ylist[i]),rs[i],100000000,contr);
-	print("pos:(%d,%d), r: %f" % (n.m_pos[0],n.m_pos[1],n.m_radius));
+	#print("pos:(%d,%d), r: %f" % (n.m_pos[0],n.m_pos[1],n.m_radius));
 	nodelist.append(n);
 
 # 生成管理器
@@ -39,20 +42,25 @@ manager.setstrategy(es.ST_NORMAL);
 manager.adjuststrategy();
 
 # 开始模拟
-#i = random.randint(0,sampleNo-1);
-#nodelist[i].start();
-#index = 0;
-#pre_index = index;
-#flag = True;
-#while flag:
-#	if len(nodelist[index].getmsgqueue()) != 0:
-#		nodelist[index].send();
-#		pre_index = index-1;
-#	index = (index+1)%sampleNo;
-#	if index == pre_index:
-#		if len(nodelist[index+1].getmsgqueue()) == 0:
-#			flag = False;
-#	if pre_index < 0:
-#		if len(nodelist[0].getmsgqueue()) == 0:
-#			flag = False;
-	
+i = random.randint(0,sampleNo-1);
+nodelist[i].start();
+print("src : %d" % i);
+index = 0;
+pre_index = index;
+flag = True;
+while flag:
+	if len(nodelist[index].getmsgqueue()) != 0:
+		nodelist[index].send();
+		pre_index = index-1;
+	index = (index+1)%sampleNo;
+	if index == pre_index:
+		if len(nodelist[index+1].getmsgqueue()) == 0:
+			flag = False;
+	if pre_index < 0:
+		if len(nodelist[0].getmsgqueue()) == 0:
+			flag = False;
+visual.vplay(contr);
+for n in contr.m_result:
+	print(n.m_id);
+
+print("conmunication successful : %d " % len(contr.m_result));

@@ -1,7 +1,7 @@
 from strategy.enum_strategy import enum_strategy as es;
 
-default_hop = 100;
-default_send = 11;
+default_hop = 10;
+default_send = 5;
 
 class manager:
 	def __init__(self, nodelist, strategy = es.ST_NORMAL):

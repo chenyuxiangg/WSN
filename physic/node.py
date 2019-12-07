@@ -39,10 +39,14 @@ class node:
 
 	def recv(self, msg):
 		self.__consume(eot.eot.RECV);
+		#print("%d from %d recv a msg: %s" % (self.m_id, msg.m_src, msg.m_msg));
 		self.m_msg_lock.acquire();
+		for m in self.__msgqueue:
+			if m.m_id == msg.m_id:
+				self.m_msg_lock.release();
+				return;
 		self.__msgqueue.append(msg);
 		self.m_msg_lock.release();
-		print("%d from %d recv a msg: %s" % (self.m_id, msg.m_src, msg.m_msg));
 
 	def getmsgqueue(self):
 		return self.__msgqueue;
@@ -57,6 +61,6 @@ class node:
 		self.m_ld_lock.release();
 
 	def start(self):
-		msg = message.message("test",self.m_id,default_hop,default_send);
+		msg = message.message(0, "test", self.m_id,default_hop,default_send);
 		self.__msgqueue.append(msg);
 

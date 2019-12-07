@@ -6,6 +6,8 @@ class control:
 	def __init__(self, nodelist):
 		self.__nodelist = nodelist;
 		self.__threadlist = [];
+		self.m_result = [];
+		self.m_lock = threading.Lock();
 	
 	def send(self, msg):
 		src_id = msg.m_src;
@@ -23,8 +25,8 @@ class control:
 				continue;
 				
 			distance = math.sqrt(math.pow((pos[0] - des_pos[0]),2) + math.pow((pos[1] - des_pos[1]),2));
-			if distance > radius:
-				continue;
+			#if distance > radius:
+			#	continue;
 				
 			# success rate of communication
 			t = 1- (math.pow(distance,2) / (radius * node.m_radius));
@@ -42,6 +44,13 @@ class control:
 	def wake(self, node, msg):
 		node.recv(msg);
 		msg.m_hopcount -= 1;
+		self.m_lock.acquire();
+		for n in self.m_result:
+			if n == node:
+				self.m_lock.release();
+				return;
+		self.m_result.append(node);
+		self.m_lock.release();
 
 	# for test
 	def getnodelist(self):

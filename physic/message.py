@@ -1,5 +1,6 @@
 class message:
-	def __init__(self, msg, src, hopcount, sendcount):
+	def __init__(self, seq, msg, src, hopcount, sendcount):
+		self.m_id = seq;
 		self.m_msg = msg;
 		self.m_src = src;
 		self.m_hopcount = hopcount;
